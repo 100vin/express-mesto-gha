@@ -21,9 +21,9 @@ app.use(bodyParser.json());
 app.use((req, res, next) => {
   req.user = { _id: '636c0fb299c8eae764e52aeb' };
   // псевдоавторизация
-  if (req.headers.Authorization || req.headers.authorization) {
-    req.user._id = req.headers.Authorization || req.headers.authorization;
-  }
+  // if (req.headers.Authorization || req.headers.authorization) {
+  //   req.user._id = req.headers.Authorization || req.headers.authorization;
+  // }
   next();
 });
 

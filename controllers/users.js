@@ -8,7 +8,7 @@ export const getUsers = async (req, res) => {
   } catch (err) {
     res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: `На сервере произошла ошибка. ${err.message}` });
+      .send({ message: 'На сервере произошла ошибка.' });
   }
 };
 
@@ -24,11 +24,11 @@ export const getUser = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для пользователя. ${err.message}` });
+        .send({ message: 'Некорректные данные для пользователя.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };
@@ -42,11 +42,11 @@ export const createUser = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для пользователя. ${err.message}` });
+        .send({ message: 'Некорректные данные для пользователя.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };
@@ -68,11 +68,11 @@ export const updateUserProfile = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для пользователя. ${err.message}` });
+        .send({ message: 'Некорректные данные для пользователя.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };
@@ -94,11 +94,11 @@ export const updateUserAvatar = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для пользователя. ${err.message}` });
+        .send({ message: 'Некорректные данные для пользователя.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };

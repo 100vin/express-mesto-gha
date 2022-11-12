@@ -8,7 +8,7 @@ export const getCards = async (req, res) => {
   } catch (err) {
     res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: `На сервере произошла ошибка. ${err.message}` });
+      .send({ message: 'На сервере произошла ошибка.' });
   }
 };
 
@@ -21,11 +21,11 @@ export const createCard = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для карточки. ${err.message}` });
+        .send({ message: 'Некорректные данные для карточки.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };
@@ -42,11 +42,11 @@ export const deleteCard = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для карточки. ${err.message}` });
+        .send({ message: 'Некорректные данные для карточки.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };
@@ -67,11 +67,11 @@ export const likeCard = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для карточки. ${err.message}` });
+        .send({ message: 'Некорректные данные для карточки.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };
@@ -92,11 +92,11 @@ export const dislikeCard = async (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `Некорректные данные для карточки. ${err.message}` });
+        .send({ message: 'Некорректные данные для карточки.' });
     } else {
       res
         .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: `На сервере произошла ошибка. ${err.message}` });
+        .send({ message: 'На сервере произошла ошибка.' });
     }
   }
 };
