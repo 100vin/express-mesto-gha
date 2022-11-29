@@ -39,25 +39,42 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
   },
-}, { versionKey: false });
-
-userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email })
-    .select('+password')
-    .then((document) => {
+}, {
+  versionKey: false,
+  statics: {
+    async findUserByCredentials(email, password) {
+      const document = await this.findOne({ email }).select('+password');
       if (!document) {
-        return Promise.reject(new Error('Неправильная почта или пароль'));
+        throw new Error('Неправильная почта или пароль');
       }
-      return bcrypt.compare(password, document.password)
-        .then((matched) => {
-          if (!matched) {
-            return Promise.reject(new Error('Неправильная почта или пароль'));
-          }
-          const user = document.toObject();
-          delete user.password;
-          return user;
-        });
-    });
-};
+      const matched = await bcrypt.compare(password, document.password);
+      if (!matched) {
+        throw new Error('Неправильная почта или пароль');
+      }
+      const user = document.toObject();
+      delete user.password;
+      return user;
+    },
+  },
+});
+
+// userSchema.statics.findUserByCredentials = function (email, password) {
+//   return this.findOne({ email })
+//     .select('+password')
+//     .then((document) => {
+//       if (!document) {
+//         return Promise.reject(new Error('Неправильная почта или пароль'));
+//       }
+//       return bcrypt.compare(password, document.password)
+//         .then((matched) => {
+//           if (!matched) {
+//             return Promise.reject(new Error('Неправильная почта или пароль'));
+//           }
+//           const user = document.toObject();
+//           delete user.password;
+//           return user;
+//         });
+//     });
+// };
 
 export const User = mongoose.model('user', userSchema);

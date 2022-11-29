@@ -3,16 +3,26 @@ import jwt from 'jsonwebtoken';
 import { constants } from 'http2';
 import { User } from '../models/user.js';
 
-export const login = (req, res) => {
-  const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ token });
-    })
-    .catch((err) => {
-      res.status(401).send({ message: err.message }); // TODO Заменить обработку ошибок
-    });
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findUserByCredentials(email, password);
+    const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+    res.send({ token });
+  } catch (err) {
+    res
+      .status(401)
+      .send({ message: err.message }); // TODO Заменить обработку ошибок
+  }
+  // const { email, password } = req.body;
+  // return User.findUserByCredentials(email, password)
+  //   .then((user) => {
+  //     const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+  //     res.send({ token });
+  //   })
+  //   .catch((err) => {
+  //     res.status(401).send({ message: err.message }); // TODO Заменить обработку ошибок
+  //   });
 };
 
 export const getUsers = async (req, res) => {
@@ -28,7 +38,8 @@ export const getUsers = async (req, res) => {
 
 export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const userId = req.params.userId === 'me' ? req.user._id : req.params.userId;
+    const user = await User.findById(userId);
     if (!user) {
       res
         .status(constants.HTTP_STATUS_NOT_FOUND)
