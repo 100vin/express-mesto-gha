@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { constants } from 'http2';
 import { User } from '../models/user.js';
 import { NotFoundError, BadRequestError, ConflictError } from '../errors/index.js';
 
@@ -29,7 +30,7 @@ export const getUser = async (req, res, next) => {
     const user = await User.findById(userId);
     if (!user) {
       throw new NotFoundError('Пользователь не найден.');
-    } else res.send(user);
+    } else res.status(constants.HTTP_STATUS_OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для пользователя.'));
@@ -58,7 +59,7 @@ export const createUser = async (req, res, next) => {
     });
     const user = document.toObject();
     delete user.password;
-    res.send(user);
+    res.status(constants.HTTP_STATUS_OK).send(user);
   } catch (err) {
     if (err.code === 11000) {
       next(new ConflictError('Пользователь с такой почтой уже существует.'));
@@ -80,7 +81,7 @@ export const updateUserProfile = async (req, res, next) => {
     );
     if (!user) {
       throw new NotFoundError('Пользователь не найден.');
-    } else res.send(user);
+    } else res.status(constants.HTTP_STATUS_OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для пользователя.'));
@@ -100,7 +101,7 @@ export const updateUserAvatar = async (req, res, next) => {
     );
     if (!user) {
       throw new NotFoundError('Пользователь не найден.');
-    } else res.send(user);
+    } else res.status(constants.HTTP_STATUS_OK).send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для пользователя.'));

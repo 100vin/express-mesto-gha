@@ -1,3 +1,4 @@
+import { constants } from 'http2';
 import { Card } from '../models/card.js';
 import { NotFoundError, BadRequestError, ForbiddenError } from '../errors/index.js';
 
@@ -14,7 +15,7 @@ export const createCard = async (req, res, next) => {
   try {
     const { name, link } = req.body;
     const card = await Card.create({ name, link, owner: req.user._id });
-    res.send(card);
+    res.status(constants.HTTP_STATUS_OK).send(card);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для карточки.'));
@@ -33,7 +34,7 @@ export const deleteCard = async (req, res, next) => {
       throw new ForbiddenError('Отсутствуют права доступа.');
     } else {
       card.remove();
-      res.send(card);
+      res.status(constants.HTTP_STATUS_OK).send(card);
     }
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -53,7 +54,7 @@ export const likeCard = async (req, res, next) => {
     );
     if (!card) {
       throw new NotFoundError('Карточка не найдена.');
-    } else res.send(card);
+    } else res.status(constants.HTTP_STATUS_OK).send(card);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для карточки.'));
@@ -72,7 +73,7 @@ export const dislikeCard = async (req, res, next) => {
     );
     if (!card) {
       throw new NotFoundError('Карточка не найдена.');
-    } else res.send(card);
+    } else res.status(constants.HTTP_STATUS_OK).send(card);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для карточки.'));
