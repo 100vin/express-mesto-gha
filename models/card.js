@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { urlRegex } from '../validators/common';
+import { urlRegex } from '../validators/common.js';
 
 const cardSchema = new mongoose.Schema({
   name: {
