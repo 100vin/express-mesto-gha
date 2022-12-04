@@ -2,11 +2,12 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import { constants } from 'http2';
-// import { errors } from 'celebrate';
+import { errors } from 'celebrate';
 import { login, createUser } from './controllers/users.js';
 import { auth } from './middlewares/auth.js';
 import { router as userRouter } from './routes/users.js';
 import { router as cardRouter } from './routes/cards.js';
+import { celebrateBodyUser, celebrateBodyAuth } from './validators/users.js';
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -21,8 +22,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(bodyParser.json());
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrateBodyAuth, login);
+app.post('/signup', celebrateBodyUser, createUser);
 
 app.use(auth);
 
@@ -34,7 +35,7 @@ app.all('/*', (req, res) => {
     .send({ message: 'Страница не найдена.' });
 });
 
-// app.use(errors());
+app.use(errors());
 
 app.use((err, req, res, next) => {
   const status = err.statusCode || constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;

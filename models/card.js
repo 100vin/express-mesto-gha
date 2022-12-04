@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { urlRegex } from '../validators/common';
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +11,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (url) => urlRegex.test(url),
+      message: () => 'Некорректный формат ссылки на изображение',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
