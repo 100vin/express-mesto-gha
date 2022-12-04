@@ -1,64 +1,45 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { constants } from 'http2';
 import { User } from '../models/user.js';
+import { NotFoundError, BadRequestError, ConflictError } from '../errors/index.js';
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
     const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
     res.send({ token });
   } catch (err) {
-    res
-      .status(401)
-      .send({ message: err.message }); // TODO Заменить обработку ошибок
+    next(err);
   }
-  // const { email, password } = req.body;
-  // return User.findUserByCredentials(email, password)
-  //   .then((user) => {
-  //     const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-  //     res.send({ token });
-  //   })
-  //   .catch((err) => {
-  //     res.status(401).send({ message: err.message }); // TODO Заменить обработку ошибок
-  //   });
 };
 
-export const getUsers = async (req, res) => {
+export const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     res.send(users);
   } catch (err) {
-    res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'На сервере произошла ошибка.' });
+    next(err);
   }
 };
 
-export const getUser = async (req, res) => {
+export const getUser = async (req, res, next) => {
   try {
     const userId = req.params.userId === 'me' ? req.user._id : req.params.userId;
     const user = await User.findById(userId);
     if (!user) {
-      res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Пользователь не найден.' });
+      throw new NotFoundError('Пользователь не найден.');
     } else res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для пользователя.' });
+      next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };
 
-export const createUser = async (req, res) => {
+export const createUser = async (req, res, next) => {
   try {
     const {
       name,
@@ -79,19 +60,17 @@ export const createUser = async (req, res) => {
     delete user.password;
     res.send(user);
   } catch (err) {
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для пользователя.' });
+    if (err.code === 11000) {
+      next(new ConflictError('Пользователь с такой почтой уже существует.'));
+    } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+      next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };
 
-export const updateUserProfile = async (req, res) => {
+export const updateUserProfile = async (req, res, next) => {
   try {
     const { name, about } = req.body;
     const user = await User.findByIdAndUpdate(
@@ -100,24 +79,18 @@ export const updateUserProfile = async (req, res) => {
       { new: true },
     );
     if (!user) {
-      res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Пользователь не найден.' });
+      throw new NotFoundError('Пользователь не найден.');
     } else res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для пользователя.' });
+      next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };
 
-export const updateUserAvatar = async (req, res) => {
+export const updateUserAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
     const user = await User.findByIdAndUpdate(
@@ -126,19 +99,13 @@ export const updateUserAvatar = async (req, res) => {
       { new: true },
     );
     if (!user) {
-      res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Пользователь не найден.' });
+      throw new NotFoundError('Пользователь не найден.');
     } else res.send(user);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для пользователя.' });
+      next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };

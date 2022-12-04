@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
+import { UnauthorizedError } from '../errors/index.js';
 
 const urlRegex = /^https?:\/\/(www\.)?[a-zA-Z0-9-]+\.[\w\-.~:/?#[\]@!$&'()*+,;=]{2,}#?$/;
 
@@ -45,11 +46,11 @@ const userSchema = new mongoose.Schema({
     async findUserByCredentials(email, password) {
       const document = await this.findOne({ email }).select('+password');
       if (!document) {
-        throw new Error('Неправильная почта или пароль');
+        throw new UnauthorizedError('Неправильная почта или пароль');
       }
       const matched = await bcrypt.compare(password, document.password);
       if (!matched) {
-        throw new Error('Неправильная почта или пароль');
+        throw new UnauthorizedError('Неправильная почта или пароль');
       }
       const user = document.toObject();
       delete user.password;
@@ -57,24 +58,5 @@ const userSchema = new mongoose.Schema({
     },
   },
 });
-
-// userSchema.statics.findUserByCredentials = function (email, password) {
-//   return this.findOne({ email })
-//     .select('+password')
-//     .then((document) => {
-//       if (!document) {
-//         return Promise.reject(new Error('Неправильная почта или пароль'));
-//       }
-//       return bcrypt.compare(password, document.password)
-//         .then((matched) => {
-//           if (!matched) {
-//             return Promise.reject(new Error('Неправильная почта или пароль'));
-//           }
-//           const user = document.toObject();
-//           delete user.password;
-//           return user;
-//         });
-//     });
-// };
 
 export const User = mongoose.model('user', userSchema);

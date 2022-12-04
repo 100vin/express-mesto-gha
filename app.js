@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import { constants } from 'http2';
+// import { errors } from 'celebrate';
 import { login, createUser } from './controllers/users.js';
 import { auth } from './middlewares/auth.js';
 import { router as userRouter } from './routes/users.js';
@@ -31,6 +32,15 @@ app.all('/*', (req, res) => {
   res
     .status(constants.HTTP_STATUS_NOT_FOUND)
     .send({ message: 'Страница не найдена.' });
+});
+
+// app.use(errors());
+
+app.use((err, req, res, next) => {
+  const status = err.statusCode || constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
+  const message = err.message || 'Неизвестная ошибка';
+  res.status(status).send({ message });
+  next();
 });
 
 app.listen(PORT, () => {

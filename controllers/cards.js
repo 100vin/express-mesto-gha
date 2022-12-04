@@ -1,57 +1,50 @@
-import { constants } from 'http2';
 import { Card } from '../models/card.js';
+import { NotFoundError, BadRequestError, ForbiddenError } from '../errors/index.js';
 
-export const getCards = async (req, res) => {
+export const getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({});
     res.send(cards);
   } catch (err) {
-    res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'На сервере произошла ошибка.' });
+    next(err);
   }
 };
 
-export const createCard = async (req, res) => {
+export const createCard = async (req, res, next) => {
   try {
     const { name, link } = req.body;
     const card = await Card.create({ name, link, owner: req.user._id });
     res.send(card);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для карточки.' });
+      next(new BadRequestError('Некорректные данные для карточки.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };
 
-export const deleteCard = async (req, res) => {
+export const deleteCard = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.cardId);
+    const card = await Card.findById(req.params.cardId);
     if (!card) {
-      res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Карточка не найдена.' });
-    } else res.send(card);
+      throw new NotFoundError('Карточка не найдена.');
+    } else if (card.owner.toString() !== req.user._id) {
+      throw new ForbiddenError('Отсутствуют права доступа.');
+    } else {
+      card.remove();
+      res.send(card);
+    }
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для карточки.' });
+      next(new BadRequestError('Некорректные данные для карточки.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };
 
-export const likeCard = async (req, res) => {
+export const likeCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -59,24 +52,18 @@ export const likeCard = async (req, res) => {
       { new: true },
     );
     if (!card) {
-      res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Карточка не найдена.' });
+      throw new NotFoundError('Карточка не найдена.');
     } else res.send(card);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для карточки.' });
+      next(new BadRequestError('Некорректные данные для карточки.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };
 
-export const dislikeCard = async (req, res) => {
+export const dislikeCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
@@ -84,19 +71,13 @@ export const dislikeCard = async (req, res) => {
       { new: true },
     );
     if (!card) {
-      res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: 'Карточка не найдена.' });
+      throw new NotFoundError('Карточка не найдена.');
     } else res.send(card);
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'Некорректные данные для карточки.' });
+      next(new BadRequestError('Некорректные данные для карточки.'));
     } else {
-      res
-        .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: 'На сервере произошла ошибка.' });
+      next(err);
     }
   }
 };
