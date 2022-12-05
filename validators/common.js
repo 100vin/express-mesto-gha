@@ -8,4 +8,4 @@ export const celebrate = celebrator(
 );
 
 export const schemaObjectId = Joi.string().hex().length(24);
-export const schemaURL = Joi.string().uri({ scheme: ['http', 'https'] });
+export const schemaURL = Joi.string().regex(urlRegex);

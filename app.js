@@ -8,6 +8,7 @@ import { auth } from './middlewares/auth.js';
 import { router as userRouter } from './routes/users.js';
 import { router as cardRouter } from './routes/cards.js';
 import { celebrateBodyUser, celebrateBodyAuth } from './validators/users.js';
+import { NotFoundError } from './errors/index.js';
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -29,10 +30,8 @@ app.use(auth);
 
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
-app.all('/*', (req, res) => {
-  res
-    .status(constants.HTTP_STATUS_NOT_FOUND)
-    .send({ message: 'Страница не найдена.' });
+app.all('/*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена.'));
 });
 
 app.use(errors());

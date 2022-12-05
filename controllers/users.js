@@ -32,7 +32,7 @@ export const getUser = async (req, res, next) => {
       throw new NotFoundError('Пользователь не найден.');
     } else res.status(constants.HTTP_STATUS_OK).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
+    if (err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
       next(err);
@@ -83,7 +83,7 @@ export const updateUserProfile = async (req, res, next) => {
       throw new NotFoundError('Пользователь не найден.');
     } else res.status(constants.HTTP_STATUS_OK).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError' || err.name === 'CastError') {
+    if (err.name === 'ValidationError') {
       next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
       next(err);
