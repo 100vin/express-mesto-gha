@@ -63,7 +63,7 @@ export const createUser = async (req, res, next) => {
   } catch (err) {
     if (err.code === 11000) {
       next(new ConflictError('Пользователь с такой почтой уже существует.'));
-    } else if (err.name === 'ValidationError' || err.name === 'CastError') {
+    } else if (err.name === 'ValidationError') {
       next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
       next(err);
@@ -83,7 +83,7 @@ export const updateUserProfile = async (req, res, next) => {
       throw new NotFoundError('Пользователь не найден.');
     } else res.status(constants.HTTP_STATUS_OK).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(new BadRequestError('Некорректные данные для пользователя.'));
     } else {
       next(err);
